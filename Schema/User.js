@@ -42,4 +42,12 @@ this.todoTask.push(task);
 return this.save()
 }
 
+User.methods.removeTask = function (taskId) {
+    const updatedTasks = this.todoTask.filter(item => {
+        return item._id.toString() !== taskId.toString();
+    });
+    this.todoTask = updatedTasks;
+    return this.save();
+}
+
 module.exports = mongoose.model("User", User);

@@ -1,5 +1,5 @@
 const express = require("express");
-const { postSignup, postSignin, postAddTask, getAllTodo } = require("../Controller/UserController");
+const { postSignup, postSignin, postAddTask, getAllTodo, deletTodo } = require("../Controller/UserController");
 const userRouter = express.Router();
 const { check, body } = require("express-validator");
 const isLoggedin = require("../middlewere/isLoggedin");
@@ -21,6 +21,9 @@ userRouter.post("/newtodo",isLoggedin,
     check("status").isString().withMessage("Status not provided")
 ]
     , postAddTask);
-    
+
 userRouter.get("/getAllTodo",isLoggedin,getAllTodo)
+
+userRouter.post("/deletTodo/:taskId",isLoggedin,deletTodo)
+
 module.exports = userRouter

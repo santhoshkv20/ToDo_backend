@@ -75,10 +75,28 @@ exports.getAllTodo = (req, res, next) => {
     startLimit = !startLimit ? 0 : startLimit;
     endLimit = !endLimit ? 1 : endLimit;
     User.findOne({ email: req.session.user.email }, { todoTask: { $slice: [startLimit, endLimit] } }).then(userData => {
-        return res.json({ "All task": userData.todoTask })
+        return res.json({ "Alltask": userData.todoTask })
     }).catch(err => {
         const error = new Error(err)
         error.httpStatusCode = 500
         return next(error)
     })
+}
+
+exports.deletTodo = (req, res, next) => {
+    const taskId = req.params.taskId
+    if (!taskId) return res.json({ "status": "data not suffient", "msg": "Task id not provided" })
+    User.findOne({ email: req.session.user.email }).then(user => {
+        user.removeTask(taskId).then(userDoc => {
+            return res.json({ allTask: userDoc.todoTask })
+        }).catch(err => {
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
+        });
+    }).catch(err => {
+        const error = new Error(err)
+        error.httpStatusCode = 500
+        return next(error)
+    });
 }
