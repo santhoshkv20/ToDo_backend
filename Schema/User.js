@@ -37,4 +37,9 @@ const User = new mongoose.Schema({
 
 })
 
+User.methods.addTask=function(task){
+this.todoTask.push(task);
+return this.save()
+}
+
 module.exports = mongoose.model("User", User);

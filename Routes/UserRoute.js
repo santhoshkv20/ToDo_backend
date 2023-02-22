@@ -1,7 +1,8 @@
 const express = require("express");
-const { postSignup, postSignin } = require("../Controller/UserController");
+const { postSignup, postSignin, postAddTask } = require("../Controller/UserController");
 const userRouter = express.Router();
-const { check, body } = require("express-validator")
+const { check, body } = require("express-validator");
+const isLoggedin = require("../middlewere/isLoggedin");
 
 userRouter.post("/signin", [
     check("email", "Email is not valid").isEmail().trim()
@@ -13,7 +14,12 @@ userRouter.post("/signup", [
     check("password").isLength({ min: 8 }).withMessage("Password must be min 8 character long").trim()
 
 ], postSignup)
-userRouter.post("/addTask")
 
+userRouter.post("/newtodo",isLoggedin,
+[
+    check("taskName").isString().isLength({ min: 4 }).withMessage("task name must be atleast 4 character"),
+    check("status").isString().withMessage("Status not provided")
+]
+    , postAddTask);
 
 module.exports = userRouter
