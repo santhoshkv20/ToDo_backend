@@ -20,6 +20,10 @@ app.use(session({secret:"TODOBACKEND",resave:false,saveUninitialized:false,store
 
 app.use(userRouter)
 
+app.use((error,req,res,next)=>{
+    res.json({error:"something went wrong "+error })
+  })
+  
 mongoose.set('strictQuery', true);
 mongoose.connect(process.env.MONGODB_CONNECT)
     .then(res => {

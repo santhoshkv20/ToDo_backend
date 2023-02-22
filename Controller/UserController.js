@@ -21,6 +21,10 @@ exports.postSignin = (req, res) => {
                 return res.status(422).json({ "STATUS": "Failure", "message": "Email or password does not match" })
             }
         })
+    }).catch(err=>{
+        const error =  new Error(err)
+        error.httpStatusCode = 500
+        return next(error)
     })
 }
 
@@ -34,10 +38,14 @@ exports.postSignup = (req, res) => {
             res.status(200).json(user)
             //send OTP
         }).catch(err => {
-            console.log(err)
+            const error =  new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
         });
     }).catch(err => {
-        console.log("Something went wrong in hashing password ", err)
+        const error =  new Error(err)
+        error.httpStatusCode = 500
+        return next(error)
     })
 
 }
