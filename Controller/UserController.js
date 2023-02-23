@@ -21,6 +21,7 @@ exports.postSignin = (req, res,next) => {
 
     User.findOne({ email }).then(user => {
         if (!user) return res.status(422).json({ "STATUS": "Failure", "message": "Email or password does not match" })
+        if(!user.isVerified)return res.json({"status":"Failure","msg":"Your account is not verified.Please check your email for the OTP"})
         bcrypt.compare(password, user.password).then(doMacth => {
             if (doMacth) {
                 req.session.user = user
@@ -45,13 +46,19 @@ exports.postSignup = (req, res,next) => {
     const errors = validationResult(req);
     if(!errors.isEmpty())return res.json({error:errors.array()[0].msg});
     bcrypt.hash(password, 12).then(hashedPassword => {
-        let user = new User({ name: name, email: email, password: hashedPassword })
+        const otp = optGenerator.generate(6,
+            {
+                upperCaseAlphabets: false,
+                specialChars: false,
+                lowerCaseAlphabets: false,
+                digits: true
+            })
+        let user = new User({ name: name, email: email, password: hashedPassword ,otp:otp,otpExpireTime:new Date()+3600000})
         user.save().then(user => {
-          const otp =   optGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false,lowerCaseAlphabets:false,digits:true })
             var mailOptions = {
                 from: process.env.EMAIL,
                 to:email,
-                subject: 'Sending Email using Node.js',
+                subject: 'Verify you account',
                 text: otp
               };
               
@@ -74,6 +81,26 @@ exports.postSignup = (req, res,next) => {
         return next(error)
     })
 
+}
+
+exports.postVerifyOtp = (req, res, next) => {
+    const { otp, email } = req.body;
+    User.findOne({ email }).then(user => {
+        if (!user) return res.json({ status: "Failure", "msg": "Email not found.Please check your email" })
+        if (user.otpExpireTime > Date.now()) return res.json({ status: "Failure", "msg": "OTP expired" })
+        if (otp == user.otp) {
+            user.otp = undefined;
+            user.otpExpireTime = undefined
+            user.isVerified = true;
+            user.save().then(updatedDoc => {
+                if (updatedDoc) return res.json({ "status": "Success", "msg": "OTP successfully  verified" })
+            });
+        }
+    }).catch(err => {
+        const error = new Error(err)
+        error.httpStatusCode = 500
+        return next(error)
+    })
 }
 
 exports.postAddTask = (req, res,next) => {
