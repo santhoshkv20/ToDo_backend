@@ -1,8 +1,18 @@
 const bcrypt = require("bcryptjs")
 const { validationResult } = require("express-validator")
+require("dotenv").config();
+const nodemailer = require("nodemailer");
 const  mongoose = require("mongoose")
-const User = require("../Schema/User")
+const User = require("../Schema/User");
+const optGenerator = require("../Utils/optGenerator");
 
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.PASSWORD
+    }
+  });
 
 exports.postSignin = (req, res,next) => {
     const { email, password } = req.body
@@ -37,8 +47,22 @@ exports.postSignup = (req, res,next) => {
     bcrypt.hash(password, 12).then(hashedPassword => {
         let user = new User({ name: name, email: email, password: hashedPassword })
         user.save().then(user => {
-            res.status(200).json(user)
-            //send OTP
+          const otp =   optGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false,lowerCaseAlphabets:false,digits:true })
+            var mailOptions = {
+                from: process.env.EMAIL,
+                to:email,
+                subject: 'Sending Email using Node.js',
+                text: otp
+              };
+              
+              transporter.sendMail(mailOptions, function(error, info){
+                if (error) {
+                  console.log(error);
+                } else {
+                  console.log('Email sent: ' + info.response);
+                }
+              });
+            return res.status(200).json(user)
         }).catch(err => {
             const error =  new Error(err)
             error.httpStatusCode = 500
