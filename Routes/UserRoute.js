@@ -2,7 +2,7 @@ const express = require("express");
 const { postSignup, postSignin, postAddTask, getAllTodo, deletTodo, updateTodo, sortTask, postVerifyOtp } = require("../Controller/UserController");
 const userRouter = express.Router();
 const { check, body } = require("express-validator");
-const isLoggedin = require("../middlewere/isLoggedin");
+const {isLoggedin,isAuth} = require("../middlewere/isLoggedin");
 
 userRouter.post("/signin", [
     check("email", "Email is not valid").isEmail().trim(),
@@ -21,24 +21,24 @@ userRouter.post("/signup", [
 
 ], postSignup)
 
-userRouter.post("/newtodo",isLoggedin,
+userRouter.post("/newtodo",isLoggedin,isAuth,
 [
     check("taskName").isString().isLength({ min: 4 }).withMessage("task name must be atleast 4 character"),
     check("status").isString().withMessage("Status not provided")
 ]
     , postAddTask);
 
-userRouter.get("/getAllTodo",isLoggedin,getAllTodo)
+userRouter.get("/getAllTodo",isLoggedin,isAuth,getAllTodo)
 
-userRouter.post("/deletTodo/:taskId",isLoggedin,deletTodo)
+userRouter.post("/deletTodo/:taskId",isLoggedin,isAuth,deletTodo)
 
-userRouter.post("/updateTask/:taskId",isLoggedin,
+userRouter.post("/updateTask/:taskId",isLoggedin,isAuth,
 [
     check("taskName").isString().isLength({ min: 4 }).withMessage("task name must be atleast 4 character"),
     check("status").isString().withMessage("Status not provided")
 
 ],updateTodo)
 
-userRouter.post("/sortTask",isLoggedin,sortTask)
+userRouter.post("/sortTask",isLoggedin,isAuth,sortTask)
 userRouter.post("/verifyOtp",postVerifyOtp)
 module.exports = userRouter

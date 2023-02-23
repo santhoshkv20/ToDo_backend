@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs")
 const { validationResult } = require("express-validator")
+const jwt = require("jsonwebtoken")
 require("dotenv").config();
 const nodemailer = require("nodemailer");
 const  mongoose = require("mongoose")
@@ -25,12 +26,14 @@ exports.postSignin = (req, res,next) => {
         bcrypt.compare(password, user.password).then(doMacth => {
             if (doMacth) {
                 req.session.user = user
+                let token  = jwt.sign(email+password,process.env.SECREATE)
                 return req.session.user.save().then(result => {
                     if (result) return res.json({
                         "status": "SUCCESS", user: {
                             email: user.email,
                             name: user.name,
-                            isVerified: user.isVerified
+                            isVerified: user.isVerified,
+                            token:token
                         }
                     })
                 })
