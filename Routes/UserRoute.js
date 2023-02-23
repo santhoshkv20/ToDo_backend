@@ -5,7 +5,13 @@ const { check, body } = require("express-validator");
 const isLoggedin = require("../middlewere/isLoggedin");
 
 userRouter.post("/signin", [
-    check("email", "Email is not valid").isEmail().trim()
+    check("email", "Email is not valid").isEmail().trim(),
+    body("password").custom((value, { req }) => {
+        if (!value) {
+            throw new Error("Password must not be empty")
+        }
+        return true
+    }).trim(),
 ], postSignin)
 
 userRouter.post("/signup", [

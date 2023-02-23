@@ -15,9 +15,9 @@ var transporter = nodemailer.createTransport({
   });
 
 exports.postSignin = (req, res,next) => {
-    const { email, password } = req.body
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.json({ error: errors.array()[0].msg });
+    const { email, password } = req.body
 
     User.findOne({ email }).select('email name isVerified password').then(user => {
         if (!user) return res.status(422).json({ "status": "Failure", "message": "Email or password does not match" })
@@ -121,7 +121,7 @@ exports.postAddTask = (req, res,next) => {
     if(!errors.isEmpty())return res.json({error:errors.array()[0].msg});
     User.findOne({ email: req.session.user.email }).then(user => {
         user.addTask(req.body).then(task => {
-            return res.json({ task: task })
+            return res.json({ task: task.todoTask })
         })
         .catch(err => {
             const error = new Error(err)
@@ -154,6 +154,7 @@ exports.deletTodo = (req, res, next) => {
     if (!taskId) return res.json({ "status": "data not suffient", "msg": "Task id not provided" })
     User.findOne({ email: req.session.user.email }).then(user => {
         user.removeTask(taskId).then(userDoc => {
+            if(!userDoc) return res.json({ status:"Failure",msg:"Could not delete the task." })
             return res.json({ allTask: userDoc.todoTask })
         }).catch(err => {
             const error = new Error(err)
@@ -183,7 +184,7 @@ exports.updateTodo = (req,res,next)=>{
             }
         }).then(user => {
             if(!user)return res.json({"status":"Failure","msg":"Task not found"})
-            return res.json({ user })
+            return res.json({ status:"Success",msg:"Task updated successfully" })
 
         }).catch(err => {
             const error = new Error(err)
