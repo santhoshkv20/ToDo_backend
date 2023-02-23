@@ -19,15 +19,20 @@ exports.postSignin = (req, res,next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.json({ error: errors.array()[0].msg });
 
-    User.findOne({ email }).then(user => {
-        if (!user) return res.status(422).json({ "STATUS": "Failure", "message": "Email or password does not match" })
+    User.findOne({ email }).select('email name isVerified password').then(user => {
+        if (!user) return res.status(422).json({ "status": "Failure", "message": "Email or password does not match" })
         if(!user.isVerified)return res.json({"status":"Failure","msg":"Your account is not verified.Please check your email for the OTP"})
         bcrypt.compare(password, user.password).then(doMacth => {
             if (doMacth) {
                 req.session.user = user
-                return req.session.user.save().then(re => {
-                    return res.json({ "STATUS": "SUCCESS", "user": user })
-
+                return req.session.user.save().then(result => {
+                    if (result) return res.json({
+                        "status": "SUCCESS", user: {
+                            email: user.email,
+                            name: user.name,
+                            isVerified: user.isVerified
+                        }
+                    })
                 })
             }
             else {
@@ -53,7 +58,7 @@ exports.postSignup = (req, res,next) => {
                 lowerCaseAlphabets: false,
                 digits: true
             })
-        let user = new User({ name: name, email: email, password: hashedPassword ,otp:otp,otpExpireTime:new Date()+3600000})
+        let user = new User({ name: name, email: email, password: hashedPassword ,otp:otp,otpExpireTime:new Date()+3600000,isVerified:false})
         user.save().then(user => {
             var mailOptions = {
                 from: process.env.EMAIL,
@@ -69,7 +74,15 @@ exports.postSignup = (req, res,next) => {
                   console.log('Email sent: ' + info.response);
                 }
               });
-            return res.status(200).json(user)
+            return res.status(200).json(
+                {
+                    "status": "Signup successfull",
+                    user: {
+                        email: user.email,
+                        name: user.name,
+                        isVerified: user.isVerified
+                    }
+                })
         }).catch(err => {
             const error =  new Error(err)
             error.httpStatusCode = 500
