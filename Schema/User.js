@@ -14,7 +14,14 @@ const User = new mongoose.Schema({
         type: String,
         required: true
     },
-    isVerified:{
+    otp: {
+        type: Number
+    },
+
+    otpExpireTime: {
+        type: Date
+    },
+    isVerified: {
         type:Boolean
     },
     todoTask: [
