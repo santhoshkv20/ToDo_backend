@@ -1,5 +1,5 @@
 const express = require("express");
-const { postSignup, postSignin, postAddTask, getAllTodo, deletTodo, updateTodo } = require("../Controller/UserController");
+const { postSignup, postSignin, postAddTask, getAllTodo, deletTodo, updateTodo, sortTask } = require("../Controller/UserController");
 const userRouter = express.Router();
 const { check, body } = require("express-validator");
 const isLoggedin = require("../middlewere/isLoggedin");
@@ -30,7 +30,8 @@ userRouter.post("/updateTask/:taskId",isLoggedin,
 [
     check("taskName").isString().isLength({ min: 4 }).withMessage("task name must be atleast 4 character"),
     check("status").isString().withMessage("Status not provided")
-    
+
 ],updateTodo)
 
+userRouter.post("/sortTask",isLoggedin,sortTask)
 module.exports = userRouter

@@ -127,3 +127,35 @@ exports.updateTodo = (req,res,next)=>{
             return next(error)
         })
 }
+
+exports.sortTask=(req,res,next)=>{
+    let sortList = req.body
+    User.findOne({email:req.session.user.email}).then(user=>{
+        let tasklist = [...user.todoTask];
+        sortList.forEach((val, index) => {
+            tasklist.forEach((task, i) => {
+                if (task._id.toString() == val.toString()) {
+                    const startIndex = i < 0 ? tasklist.length + i : i;
+                    if (startIndex >= 0 && startIndex < tasklist.length) {
+                        const endIndex = index < 0 ? tasklist.length + index : index;
+                        const [item] = tasklist.splice(i, 1);
+                        tasklist.splice(endIndex, 0, item);
+                    }
+                }
+            })
+        })
+        user.todoTask = tasklist
+        return user.save().then(user => {
+            return res.send({ "taskUpdated":user.todoTask })
+
+        }).catch(err => {
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
+        })
+    }).catch(err => {
+        const error = new Error(err)
+        error.httpStatusCode = 500
+        return next(error)
+    })
+}
