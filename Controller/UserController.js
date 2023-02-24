@@ -227,3 +227,11 @@ exports.sortTask=(req,res,next)=>{
         return next(error)
     })
 }
+
+exports.postLogout = (req, res, next) => {
+    req.session.destroy((err) => {
+        if (err) return res.json({ "status": "Failure", "msg": "something went wrong" })
+        else return res.json({ status: "Logged out", msg: "your logged out successfully" })
+
+    })
+}
