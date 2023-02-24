@@ -142,7 +142,7 @@ exports.getAllTodo = (req, res, next) => {
     let startLimit = parseInt(req.query.startLimit)
     let endLimit = parseInt(req.query.endLimit)
     startLimit = !startLimit ? 0 : startLimit;
-    endLimit = !endLimit ? 1 : endLimit;
+    endLimit = !endLimit ? 10000000 : endLimit;
     User.findOne({ email: req.session.user.email }, { todoTask: { $slice: [startLimit, endLimit] } }).then(userData => {
         return res.json({ "Alltask": userData.todoTask })
     }).catch(err => {
