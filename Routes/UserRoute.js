@@ -24,6 +24,12 @@ userRouter.post("/signup", [
 userRouter.post("/newtodo",isLoggedin,isAuth,
 [
     check("taskName").isString().isLength({ min: 4 }).withMessage("task name must be atleast 4 character"),
+    body("date").custom((value, { req }) => {
+        if (!value) {
+            throw new Error("Date must not be empty")
+        }
+        return true
+    }).trim(),
     check("status").isString().withMessage("Status not provided")
 ]
     , postAddTask);
@@ -35,6 +41,12 @@ userRouter.post("/deletTodo/:taskId",isLoggedin,isAuth,deletTodo)
 userRouter.post("/updateTask/:taskId",isLoggedin,isAuth,
 [
     check("taskName").isString().isLength({ min: 4 }).withMessage("task name must be atleast 4 character"),
+    body("date").custom((value, { req }) => {
+        if (!value) {
+            throw new Error("Date must not be empty")
+        }
+        return true
+    }).trim(),
     check("status").isString().withMessage("Status not provided")
 
 ],updateTodo)
