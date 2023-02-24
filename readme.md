@@ -184,3 +184,16 @@ Response body
     ]
 }
 ```
+
+9. Logout user
+- POST http://localhost:4000/logout
+```
+Response body
+
+{
+    "status": "Logged out",
+    "msg": "your logged out successfully"
+}
+
+
+```
