@@ -48,54 +48,62 @@ exports.postSignin = (req, res,next) => {
     })
 }
 
-exports.postSignup = (req, res,next) => {
+exports.postSignup = async (req, res, next) => {
     const { name, email, password } = req.body
     const errors = validationResult(req);
-    if(!errors.isEmpty())return res.json({error:errors.array()[0].msg});
-    bcrypt.hash(password, 12).then(hashedPassword => {
-        const otp = optGenerator.generate(6,
-            {
-                upperCaseAlphabets: false,
-                specialChars: false,
-                lowerCaseAlphabets: false,
-                digits: true
-            })
-        let user = new User({ name: name, email: email, password: hashedPassword ,otp:otp,otpExpireTime:new Date()+3600000,isVerified:false})
-        user.save().then(user => {
-            var mailOptions = {
-                from: process.env.EMAIL,
-                to:email,
-                subject: 'Verify you account',
-                text: otp
-              };
-              
-              transporter.sendMail(mailOptions, function(error, info){
-                if (error) {
-                  console.log(error);
-                } else {
-                  console.log('Email sent: ' + info.response);
-                }
-              });
-            return res.status(200).json(
-                {
-                    "status": "Signup successfull",
-                    user: {
-                        email: user.email,
-                        name: user.name,
-                        isVerified: user.isVerified
-                    }
-                })
-        }).catch(err => {
-            const error =  new Error(err)
-            error.httpStatusCode = 500
-            return next(error)
-        });
-    }).catch(err => {
-        const error =  new Error(err)
-        error.httpStatusCode = 500
-        return next(error)
-    })
+    if (!errors.isEmpty()) return res.json({ error: errors.array()[0].msg });
+try{
+    let result = await User.find({ email: email })
+    if (result.length > 0) return res.json({ status: "Duplicate email", msg: "Email already exist" })
+    let hashedPassword = await bcrypt.hash(password, 12)
+    const otp = optGenerator.generate(6,
+        {
+            upperCaseAlphabets: false,
+            specialChars: false,
+            lowerCaseAlphabets: false,
+            digits: true
+        })
+    let user = new User({ name: name, 
+        email: email, 
+        password: hashedPassword, 
+        otp: otp, 
+        otpExpireTime: new Date() + 3600000, isVerified: false })
 
+    let userDoc = await user.save()
+    var mailOptions = {
+        from: process.env.EMAIL,
+        to: email,
+        subject: 'Verify your account',
+        text: otp
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+    if (userDoc) {
+        return res.status(200).json(
+            {
+                "status": "Signup successfull",
+                user: {
+                    email: userDoc.email,
+                    name: userDoc.name,
+                    isVerified: userDoc.isVerified
+                }
+            })
+    }
+    else{
+        return res.json({status:"failure",msg:"Something went wrong"})
+    }
+}catch(error){
+    if (!error.statusCode) {
+        err.statusCode = 500;
+      }
+      next(error);
+}
 }
 
 exports.postVerifyOtp = (req, res, next) => {
