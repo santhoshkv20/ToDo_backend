@@ -22,7 +22,7 @@ Respose body
         "isVerified": false
     }
 }
-OTP will be sent to email address
+OTP will be sent to email address(valid for 1 hour)
 ```
 2. Verify OTP
 - POST http://localhost:4000/verifyOtp
@@ -137,7 +137,7 @@ Respose body
 - http://localhost:4000/deletTodo/63f77181380f7bc041941c6b
 
 ```
-Response body(update all task will sent)
+Response body(updated all task will be sent)
 {
     "allTask": [
         {

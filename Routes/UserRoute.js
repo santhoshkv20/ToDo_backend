@@ -2,7 +2,7 @@ const express = require("express");
 const { postSignup, postSignin, postAddTask, getAllTodo, deletTodo, updateTodo, sortTask, postVerifyOtp, postLogout } = require("../Controller/UserController");
 const userRouter = express.Router();
 const { check, body } = require("express-validator");
-const {isLoggedin,isAuth} = require("../middlewere/isLoggedin");
+const {isLoggedin,isAuth} = require("../middlewere/authCheck");
 
 userRouter.post("/signin", [
     check("email", "Email is not valid").isEmail().trim(),
