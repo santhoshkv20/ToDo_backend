@@ -4,7 +4,8 @@ const cors = require("cors")
 const mongoose = require("mongoose");
 const session  = require("express-session")
 const mongodbStore = require("connect-mongodb-session")(session)
-const userRouter = require("./Routes/UserRoute");
+const userRouter = require("./Routes/userRoute");
+const taskRouter = require("./Routes/taskRoutes");
 require("dotenv").config();
 
 const store = new mongodbStore({
@@ -18,7 +19,8 @@ app.use(bodyParser.json());
 app.use(cors())
 app.use(session({secret:"TODOBACKEND",resave:false,saveUninitialized:false,store:store}))
 
-app.use(userRouter)
+app.use("/user",userRouter)
+app.use("/task",taskRouter)
 
 app.use((error,req,res,next)=>{
     res.json({error:"something went wrong "+error })

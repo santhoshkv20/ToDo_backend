@@ -1,5 +1,5 @@
 const express = require("express");
-const { postSignup, postSignin, postAddTask, getAllTodo, deletTodo, updateTodo, sortTask, postVerifyOtp, postLogout, regenareteOtp } = require("../Controller/UserController");
+const { postSignup, postSignin, postVerifyOtp, postLogout, regenareteOtp } = require("../Controller/UserController");
 const userRouter = express.Router();
 const { check, body } = require("express-validator");
 const {isLoggedin,isAuth} = require("../middlewere/authCheck");
@@ -21,37 +21,7 @@ userRouter.post("/signup", [
 
 ], postSignup)
 
-userRouter.post("/newtodo",isLoggedin,isAuth,
-[
-    check("taskName").isString().isLength({ min: 4 }).withMessage("task name must be atleast 4 character"),
-    body("date").custom((value, { req }) => {
-        if (!value) {
-            throw new Error("Date must not be empty")
-        }
-        return true
-    }).trim(),
-    check("status").isString().withMessage("Status not provided")
-]
-    , postAddTask);
 
-userRouter.get("/getAllTodo",isLoggedin,isAuth,getAllTodo)
-
-userRouter.post("/deletTodo/:taskId",isLoggedin,isAuth,deletTodo)
-
-userRouter.post("/updateTask/:taskId",isLoggedin,isAuth,
-[
-    check("taskName").isString().isLength({ min: 4 }).withMessage("task name must be atleast 4 character"),
-    body("date").custom((value, { req }) => {
-        if (!value) {
-            throw new Error("Date must not be empty")
-        }
-        return true
-    }).trim(),
-    check("status").isString().withMessage("Status not provided")
-
-],updateTodo)
-
-userRouter.post("/sortTask",isLoggedin,isAuth,sortTask)
 userRouter.post("/verifyOtp",postVerifyOtp)
 userRouter.post("/logout",isLoggedin,isAuth, postLogout)
 userRouter.post("/regenareteOtp",
