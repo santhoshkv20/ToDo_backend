@@ -235,3 +235,49 @@ exports.postLogout = (req, res, next) => {
 
     })
 }
+exports.regenareteOtp = (req, res, next) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty())return res.json({error:errors.array()[0].msg});
+    const { email } = req.body;
+    const otp = optGenerator.generate(6,
+        {
+            upperCaseAlphabets: false,
+            specialChars: false,
+            lowerCaseAlphabets: false,
+            digits: true
+        })
+    User.findOne({ email: email }).then(user => {
+        if (!user) return res.json({ status: "Failure", msg: "user with " + email + " email not found" })
+        if(user.isVerified)return res.json({status:"failure",msg:""})
+        user.otp = otp;
+        user.otpExpireTime = new Date() + 3600000;
+        user.save()
+            .then(userDoc => {
+                var mailOptions = {
+                    from: process.env.EMAIL,
+                    to: email,
+                    subject: 'Verify your account',
+                    text: otp
+                };
+
+                transporter.sendMail(mailOptions, function (error, info) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log('Email sent: ' + info.response);
+                    }
+
+                });
+                if (userDoc) return res.json({ staus: "success", msg: "OTP send succeaafully" })
+            }).catch(err => {
+                const error = new Error(err)
+                error.httpStatusCode = 500
+                return next(error)
+            })
+
+    }).catch(err => {
+        const error = new Error(err)
+        error.httpStatusCode = 500
+        return next(error)
+    })
+}

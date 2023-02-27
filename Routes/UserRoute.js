@@ -1,5 +1,5 @@
 const express = require("express");
-const { postSignup, postSignin, postAddTask, getAllTodo, deletTodo, updateTodo, sortTask, postVerifyOtp, postLogout } = require("../Controller/UserController");
+const { postSignup, postSignin, postAddTask, getAllTodo, deletTodo, updateTodo, sortTask, postVerifyOtp, postLogout, regenareteOtp } = require("../Controller/UserController");
 const userRouter = express.Router();
 const { check, body } = require("express-validator");
 const {isLoggedin,isAuth} = require("../middlewere/authCheck");
@@ -54,4 +54,9 @@ userRouter.post("/updateTask/:taskId",isLoggedin,isAuth,
 userRouter.post("/sortTask",isLoggedin,isAuth,sortTask)
 userRouter.post("/verifyOtp",postVerifyOtp)
 userRouter.post("/logout",isLoggedin,isAuth, postLogout)
+userRouter.post("/regenareteOtp",
+ [
+    check("email", "Please provide valid email address").isEmail().trim()
+]
+,regenareteOtp)
 module.exports = userRouter
