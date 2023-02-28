@@ -1,4 +1,5 @@
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const { getToken } = require("../Utils/getToken");
 
 exports.isLoggedin =(req,res,next)=>{
     if(!req.session.user){
@@ -8,8 +9,9 @@ exports.isLoggedin =(req,res,next)=>{
 
 }
 exports.isAuth = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    jwt.verify(authHeader, process.env.SECREATE, (err, user) => {
+    const token = getToken(req);
+    if(!token)return res.status(403).json({status: "FAILURE", message: "Auth token not passed"})
+    jwt.verify(token, process.env.SECREATE, (err, user) => {
         if (err) {
             return res.status(403).json({ status: "FAILURE", message: "Your are not authorized" });
         }

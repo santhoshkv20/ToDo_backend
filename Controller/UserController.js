@@ -20,7 +20,7 @@ exports.postSignin = (req, res,next) => {
         bcrypt.compare(password, user.password).then(doMacth => {
             if (doMacth) {
                 req.session.user = user
-                let token  = jwt.sign(email+password,process.env.SECREATE)
+                let token  = jwt.sign({tpken:email+password},process.env.SECREATE,{expiresIn:"5m"})
                 return req.session.user.save().then(result => {
                     if (result) return res.json({
                         "status": "SUCCESS", user: {

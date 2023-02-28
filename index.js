@@ -11,7 +11,7 @@ require("dotenv").config();
 const store = new mongodbStore({
     uri:process.env.MONGODB_CONNECT,
     collection:"sessions",
-    expires:  1000 * 30,
+  expires: 1000 * 60 * 60 * 5,
   })
 
 const app = express();
