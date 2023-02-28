@@ -61,7 +61,8 @@ Request body
         "token": "eyJhbGciOiJIUzI1NiJ9.c2FudGhvc2hrdjI5OEBnbWFpbC5jb21za3Y4NDkyQDIw.OZ6IEISDTJYCI0M1O5lYHSQCU8pFLdu9IcSybrzeps0"
     }
 }
-After signin, token must sent with every request in Header(Authorization)
+After signin,Bearer token must be sent with every request in Authorization(token will expires in 5 minutes)
+Session also tracked here which expire in 5 minutes
 ```
 
 4. Adding new Todo task
