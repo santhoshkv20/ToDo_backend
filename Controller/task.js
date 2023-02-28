@@ -73,7 +73,8 @@ exports.updateTodo = (req, res, next) => {
 }
 
 exports.sortTask = (req, res, next) => {
-    let sortList = req.body
+    const { sortList} = req.body
+    if (!sortList) return res.json({ status: "failure", message: "please send list of task ID`s to sort" })
     User.findOne({ email: req.session.user.email }).then(user => {
         let tasklist = [...user.todoTask];
         sortList.forEach((val, index) => {

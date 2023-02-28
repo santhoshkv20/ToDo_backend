@@ -22,7 +22,12 @@ userRouter.post("/signup", [
 ], postSignup)
 
 
-userRouter.post("/verifyOtp", postVerifyOtp)
+userRouter.post("/verifyOtp", 
+[
+    check("email", "Please provide valid email address").isEmail().trim(),
+    check("otp","OTP is not valid").isNumeric().isLength({min:6})
+],
+ postVerifyOtp)
 userRouter.post("/logout", isLoggedin, isAuth, postLogout)
 userRouter.post("/regenareteOtp",
     [

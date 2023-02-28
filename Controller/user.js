@@ -15,7 +15,7 @@ exports.postSignin = (req, res, next) => {
     const { email, password } = req.body
 
     User.findOne({ email }).select('email name isVerified password').then(user => {
-        if (!user) return res.status(422).json({ status: "failure", message: "Email or password does not match" })
+        if (!user) return res.status(422).json({ status: "failure", message: "Account not found. please signup" })
         if (!user.isVerified) return res.json({ status: "failure", message: "Your account is not verified.Please check your email for the OTP" })
 
         bcrypt.compare(password, user.password).then(doMacth => {
@@ -35,7 +35,7 @@ exports.postSignin = (req, res, next) => {
                 })
             }
             else {
-                return res.status(422).json({ status: "failure", message: "Email or password does not match" })
+                return res.status(422).json({ status: "failure", message: "Password does not match" })
             }
         })
     }).catch(err => {
@@ -107,11 +107,14 @@ exports.postSignup = async (req, res, next) => {
 }
 
 exports.postVerifyOtp = (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.json({status: "error", error: errors.array()[0].msg });
     const { otp, email } = req.body;
 
     User.findOne({ email }).then(user => {
         if (!user) return res.json({ status: "Failure", "msg": "Email not found.Please check your email" })
         if (user.otpExpireTime > Date.now()) return res.json({ status: "Failure", message: "OTP expired" })
+        if (user.isVerified) return res.json({ status: "verified", message: "your account is already verified" })
         if (otp == user.otp) {
             user.otp = undefined;
             user.otpExpireTime = undefined

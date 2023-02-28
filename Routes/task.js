@@ -6,7 +6,7 @@ const { postAddTask, getAllTodo, deletTodo, updateTodo, sortTask } = require("..
 
 taskRouter.post("/newtodo", isLoggedin, isAuth,
     [
-        check("taskName").isString().isLength({ min: 4 }).withMessage("task name must be atleast 4 character"),
+        check("taskName","task name must be atleast 4 character").isString().isLength({ min: 4 }),
         body("date").custom((value, { req }) => {
             if (!value) {
                 throw new Error("Date must not be empty")
@@ -23,7 +23,7 @@ taskRouter.post("/deletTodo/:taskId", isLoggedin, isAuth, deletTodo)
 
 taskRouter.post("/updateTask/:taskId", isLoggedin, isAuth,
     [
-        check("taskName").isString().isLength({ min: 4 }).withMessage("task name must be atleast 4 character"),
+        check("taskName","task name must be atleast 4 character").isString().isLength({ min: 4 }),
         body("date").custom((value, { req }) => {
             if (!value) {
                 throw new Error("Date must not be empty")
