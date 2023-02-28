@@ -5,16 +5,17 @@ const { hanldeError } = require("../Utils/handleErrorHelper");
 
 exports.postAddTask = (req, res, next) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.json({ error: errors.array()[0].msg });
+    if (!errors.isEmpty()) return res.json({ status: "error", error: errors.array()[0].msg });
+    
     User.findOne({ email: req.session.user.email }).then(user => {
         user.addTask(req.body).then(task => {
-            return res.json({ task: task.todoTask })
+            return res.json({ status: "success", task: task.todoTask })
         })
             .catch(err => {
-                hanldeError(next,err)
+                hanldeError(next, err)
             })
     }).catch(err => {
-        hanldeError(next,err)
+        hanldeError(next, err)
     })
 }
 
@@ -23,25 +24,27 @@ exports.getAllTodo = (req, res, next) => {
     let endLimit = parseInt(req.query.endLimit)
     startLimit = !startLimit ? 0 : startLimit;
     endLimit = !endLimit ? 10000000 : endLimit;
+
     User.findOne({ email: req.session.user.email }, { todoTask: { $slice: [startLimit, endLimit] } }).then(userData => {
-        return res.json({ "Alltask": userData.todoTask })
+        return res.json({ status: "success", alltask: userData.todoTask })
     }).catch(err => {
-        hanldeError(next,err)
+        hanldeError(next, err)
     })
 }
 
 exports.deletTodo = (req, res, next) => {
     const taskId = req.params.taskId
-    if (!taskId) return res.json({ "status": "data not suffient", "msg": "Task id not provided" })
+    if (!taskId) return res.json({ status: "data not suffient", message: "Task id not provided" })
+
     User.findOne({ email: req.session.user.email }).then(user => {
         user.removeTask(taskId).then(userDoc => {
-            if (!userDoc) return res.json({ status: "Failure", msg: "Could not delete the task." })
-            return res.json({ allTask: userDoc.todoTask })
+            if (!userDoc) return res.json({ status: "Failure", message: "Could not delete the task." })
+            return res.json({ status: "success", allTask: userDoc.todoTask })
         }).catch(err => {
-            hanldeError(next,err)
+            hanldeError(next, err)
         });
     }).catch(err => {
-        hanldeError(next,err)
+        hanldeError(next, err)
     });
 }
 
@@ -50,6 +53,7 @@ exports.updateTodo = (req, res, next) => {
     if (!errors.isEmpty()) return res.json({ error: errors.array()[0].msg });
     const taskId = req.params.taskId
     const { taskName, date, status } = req.body
+
     User.findOneAndUpdate({
         email: req.session.user.email, 'todoTask._id': mongoose.Types.ObjectId(taskId)
     },
@@ -60,11 +64,11 @@ exports.updateTodo = (req, res, next) => {
                 'todoTask.$.status': status
             }
         }).then(user => {
-            if (!user) return res.json({ "status": "Failure", "msg": "Task not found" })
-            return res.json({ status: "Success", msg: "Task updated successfully" })
+            if (!user) return res.json({ status: "failure", message: "Task not found" })
+            return res.json({ status: "success", message: "Task updated successfully" })
 
         }).catch(err => {
-            hanldeError(next,err)
+            hanldeError(next, err)
         })
 }
 
@@ -86,12 +90,12 @@ exports.sortTask = (req, res, next) => {
         })
         user.todoTask = tasklist
         return user.save().then(user => {
-            return res.send({ "taskUpdated": user.todoTask })
+            return res.send({ status: "success", "taskUpdated": user.todoTask })
 
         }).catch(err => {
-           hanldeError(next,err)
+            hanldeError(next, err)
         })
     }).catch(err => {
-        hanldeError(next,err)
+        hanldeError(next, err)
     })
 }

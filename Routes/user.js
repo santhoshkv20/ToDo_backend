@@ -2,7 +2,7 @@ const express = require("express");
 const { postSignup, postSignin, postVerifyOtp, postLogout, regenareteOtp } = require("../Controller/user");
 const userRouter = express.Router();
 const { check, body } = require("express-validator");
-const {isLoggedin,isAuth} = require("../middlewere/authCheck");
+const { isLoggedin, isAuth } = require("../middlewere/authCheck");
 
 userRouter.post("/signin", [
     check("email", "Email is not valid").isEmail().trim(),
@@ -22,11 +22,12 @@ userRouter.post("/signup", [
 ], postSignup)
 
 
-userRouter.post("/verifyOtp",postVerifyOtp)
-userRouter.post("/logout",isLoggedin,isAuth, postLogout)
+userRouter.post("/verifyOtp", postVerifyOtp)
+userRouter.post("/logout", isLoggedin, isAuth, postLogout)
 userRouter.post("/regenareteOtp",
- [
-    check("email", "Please provide valid email address").isEmail().trim()
-]
-,regenareteOtp)
+    [
+        check("email", "Please provide valid email address").isEmail().trim()
+    ]
+    , regenareteOtp)
+    
 module.exports = userRouter

@@ -22,7 +22,7 @@ const User = new mongoose.Schema({
         type: Date
     },
     isVerified: {
-        type:Boolean
+        type: Boolean
     },
     todoTask: [
         {
@@ -44,9 +44,9 @@ const User = new mongoose.Schema({
 
 })
 
-User.methods.addTask=function(task){
-this.todoTask.push(task);
-return this.save()
+User.methods.addTask = function (task) {
+    this.todoTask.push(task);
+    return this.save()
 }
 
 User.methods.removeTask = function (taskId) {
