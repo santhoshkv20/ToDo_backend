@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken")
 require("dotenv").config();
 const User = require("../Schema/User");
 const { sendMail } = require("../Utils/emailHelper");
+const { hanldeError } = require("../Utils/handleErrorHelper");
 const optGenerator = require("../Utils/optGenerator");
 
 
@@ -36,9 +37,7 @@ exports.postSignin = (req, res,next) => {
             }
         })
     }).catch(err=>{
-        const error =  new Error(err)
-        error.httpStatusCode = 500
-        return next(error)
+        hanldeError(next,err)
     })
 }
 
@@ -120,9 +119,7 @@ exports.postVerifyOtp = (req, res, next) => {
         else return res.json({ "status": "Failure", "msg": "OTP does not match" })
 
     }).catch(err => {
-        const error = new Error(err)
-        error.httpStatusCode = 500
-        return next(error)
+        hanldeError(next,err)
     })
 }
 
@@ -158,14 +155,10 @@ exports.regenareteOtp = (req, res, next) => {
                 })
                 
             }).catch(err => {
-                const error = new Error(err)
-                error.httpStatusCode = 500
-                return next(error)
+                hanldeError(next,err)
             })
 
     }).catch(err => {
-        const error = new Error(err)
-        error.httpStatusCode = 500
-        return next(error)
+       hanldeError(next,err)
     })
 }

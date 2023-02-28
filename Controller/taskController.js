@@ -1,6 +1,7 @@
 const { validationResult } = require("express-validator")
 const mongoose = require("mongoose")
 const User = require("../Schema/User");
+const { hanldeError } = require("../Utils/handleErrorHelper");
 
 exports.postAddTask = (req, res, next) => {
     const errors = validationResult(req);
@@ -10,14 +11,10 @@ exports.postAddTask = (req, res, next) => {
             return res.json({ task: task.todoTask })
         })
             .catch(err => {
-                const error = new Error(err)
-                error.httpStatusCode = 500
-                return next(error)
+                hanldeError(next,err)
             })
     }).catch(err => {
-        const error = new Error(err)
-        error.httpStatusCode = 500
-        return next(error)
+        hanldeError(next,err)
     })
 }
 
@@ -29,9 +26,7 @@ exports.getAllTodo = (req, res, next) => {
     User.findOne({ email: req.session.user.email }, { todoTask: { $slice: [startLimit, endLimit] } }).then(userData => {
         return res.json({ "Alltask": userData.todoTask })
     }).catch(err => {
-        const error = new Error(err)
-        error.httpStatusCode = 500
-        return next(error)
+        hanldeError(next,err)
     })
 }
 
@@ -43,14 +38,10 @@ exports.deletTodo = (req, res, next) => {
             if (!userDoc) return res.json({ status: "Failure", msg: "Could not delete the task." })
             return res.json({ allTask: userDoc.todoTask })
         }).catch(err => {
-            const error = new Error(err)
-            error.httpStatusCode = 500
-            return next(error)
+            hanldeError(next,err)
         });
     }).catch(err => {
-        const error = new Error(err)
-        error.httpStatusCode = 500
-        return next(error)
+        hanldeError(next,err)
     });
 }
 
@@ -73,9 +64,7 @@ exports.updateTodo = (req, res, next) => {
             return res.json({ status: "Success", msg: "Task updated successfully" })
 
         }).catch(err => {
-            const error = new Error(err)
-            error.httpStatusCode = 500
-            return next(error)
+            hanldeError(next,err)
         })
 }
 
@@ -100,13 +89,9 @@ exports.sortTask = (req, res, next) => {
             return res.send({ "taskUpdated": user.todoTask })
 
         }).catch(err => {
-            const error = new Error(err)
-            error.httpStatusCode = 500
-            return next(error)
+           hanldeError(next,err)
         })
     }).catch(err => {
-        const error = new Error(err)
-        error.httpStatusCode = 500
-        return next(error)
+        hanldeError(next,err)
     })
 }
