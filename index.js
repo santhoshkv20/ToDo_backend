@@ -4,8 +4,8 @@ const cors = require("cors")
 const mongoose = require("mongoose");
 const session  = require("express-session")
 const mongodbStore = require("connect-mongodb-session")(session)
-const userRouter = require("./Routes/userRoute");
-const taskRouter = require("./Routes/taskRoutes");
+const userRouter = require("./Routes/user");
+const taskRouter = require("./Routes/task");
 require("dotenv").config();
 
 const store = new mongodbStore({

@@ -2,7 +2,7 @@ const express = require("express");
 const taskRouter = express.Router();
 const { check, body } = require("express-validator");
 const { isLoggedin, isAuth } = require("../middlewere/authCheck");
-const { postAddTask, getAllTodo, deletTodo, updateTodo, sortTask } = require("../Controller/taskController")
+const { postAddTask, getAllTodo, deletTodo, updateTodo, sortTask } = require("../Controller/task")
 
 taskRouter.post("/newtodo", isLoggedin, isAuth,
     [

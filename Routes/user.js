@@ -1,5 +1,5 @@
 const express = require("express");
-const { postSignup, postSignin, postVerifyOtp, postLogout, regenareteOtp } = require("../Controller/UserController");
+const { postSignup, postSignin, postVerifyOtp, postLogout, regenareteOtp } = require("../Controller/user");
 const userRouter = express.Router();
 const { check, body } = require("express-validator");
 const {isLoggedin,isAuth} = require("../middlewere/authCheck");
