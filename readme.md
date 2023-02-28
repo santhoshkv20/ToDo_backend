@@ -2,7 +2,7 @@
 
 1. Signup
 
-- POST http://localhost:4000/signup
+- POST http://localhost:4000/user/signup
 
 ```
 Request body
@@ -25,7 +25,7 @@ Respose body
 OTP will be sent to email address(valid for 1 hour)
 ```
 2. Verify OTP
-- POST http://localhost:4000/verifyOtp
+- POST http://localhost:4000/user/verifyOtp
 ```
 
 Request body
@@ -43,7 +43,7 @@ Response body
 }
 ```
 3. Signin
-- POST http://localhost:4000/signin
+- POST http://localhost:4000/user/signin
 ```
 Request body
     {   
@@ -65,7 +65,7 @@ After signin, token must sent with every request in Header(Authorization)
 ```
 
 4. Adding new Todo task
-- POST http://localhost:4000/newtodo
+- POST http://localhost:4000/task/newtodo
 ```
 Request body
 
@@ -89,7 +89,7 @@ Response body
 }
 ```
 5. List all task
-- GET http://localhost:4000/getAllTodo/?startLimit=0&endLimit=3
+- GET http://localhost:4000/task/getAllTodo/?startLimit=0&endLimit=3
 
 ```
 Response body
@@ -117,7 +117,7 @@ Response body
 }
 ```
 6. Update task
-- POST  http://localhost:4000/updateTask/63f8ba41fc47bfc83cf801dc
+- POST  http://localhost:4000/task/updateTask/63f8ba41fc47bfc83cf801dc
 ```
 Request body
 {
@@ -134,7 +134,7 @@ Respose body
 }
 ```
 7. Delete task
-- http://localhost:4000/deletTodo/63f77181380f7bc041941c6b
+- http://localhost:4000/task/deletTodo/63f77181380f7bc041941c6b
 
 ```
 Response body(updated all task will be sent)
@@ -156,7 +156,7 @@ Response body(updated all task will be sent)
 }
 ```
 8. Sort tasks
-- http://localhost:4000/sortTask
+- http://localhost:4000/task/sortTask
 ```
 Request body(array of task ids must be sent in body)
 
@@ -186,7 +186,7 @@ Response body
 ```
 
 9. Logout user
-- POST http://localhost:4000/logout
+- POST http://localhost:4000/user/logout
 ```
 Response body
 
@@ -196,4 +196,20 @@ Response body
 }
 
 
+```
+10. Regenarate OTP
+- POST http://localhost:4000/user/regenareteOtp
+```
+Request body
+
+{
+    "email":"user@gmail.com"
+}
+
+Response body
+
+{
+    "staus": "success",
+    "msg": "OTP send succeaafully"
+}
 ```
