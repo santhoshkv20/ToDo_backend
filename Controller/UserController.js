@@ -2,17 +2,11 @@ const bcrypt = require("bcryptjs")
 const { validationResult } = require("express-validator")
 const jwt = require("jsonwebtoken")
 require("dotenv").config();
-const nodemailer = require("nodemailer");
 const User = require("../Schema/User");
+const { sendMail } = require("../Utils/emailHelper");
 const optGenerator = require("../Utils/optGenerator");
 
-var transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL,
-      pass: process.env.PASSWORD
-    }
-  });
+
 
 exports.postSignin = (req, res,next) => {
     const errors = validationResult(req);
@@ -56,6 +50,7 @@ try{
     let result = await User.find({ email: email })
     if (result.length > 0) return res.json({ status: "Duplicate email", msg: "Email already exist" })
     let hashedPassword = await bcrypt.hash(password, 12)
+
     const otp = optGenerator.generate(6,
         {
             upperCaseAlphabets: false,
@@ -70,21 +65,10 @@ try{
         otpExpireTime: new Date() + 3600000, isVerified: false })
 
     let userDoc = await user.save()
-    var mailOptions = {
-        from: process.env.EMAIL,
-        to: email,
-        subject: 'Verify your account',
-        text: otp
-    };
 
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log('Email sent: ' + info.response);
-        }
-    });
     if (userDoc) {
+        let msg = await sendMail(email, "verify your account", otp)
+        if(msg.accepted){
         return res.status(200).json(
             {
                 "status": "Signup successfull",
@@ -94,6 +78,19 @@ try{
                     isVerified: userDoc.isVerified
                 }
             })
+        }
+        else {
+            return res.status(200).json(
+                {
+                    "status": "Signup successfull",
+                    user: {
+                        email: userDoc.email,
+                        name: userDoc.name,
+                        isVerified: userDoc.isVerified
+                    },
+                    additionalInfo:"Something went wrong. Can not send mail, Please try again"
+                })
+        }
     }
     else{
         return res.json({status:"failure",msg:"Something went wrong"})
@@ -155,22 +152,11 @@ exports.regenareteOtp = (req, res, next) => {
         user.otpExpireTime = new Date() + 3600000;
         user.save()
             .then(userDoc => {
-                var mailOptions = {
-                    from: process.env.EMAIL,
-                    to: email,
-                    subject: 'Verify your account',
-                    text: otp
-                };
-
-                transporter.sendMail(mailOptions, function (error, info) {
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        console.log('Email sent: ' + info.response);
-                    }
-
-                });
-                if (userDoc) return res.json({ staus: "success", msg: "OTP send succeaafully" })
+                sendMail(email, "Verify your account", otp).then(data=>{
+                    if(data.accepted)if (userDoc) return res.json({ staus: "success", msg: "OTP send succeaafully" })
+                    else return res.json({ staus: "success", msg: "Somethig went wrong ,please try again" })
+                })
+                
             }).catch(err => {
                 const error = new Error(err)
                 error.httpStatusCode = 500
