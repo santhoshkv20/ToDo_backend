@@ -10,10 +10,10 @@ exports.isLoggedin = (req, res, next) => {
 }
 exports.isAuth = (req, res, next) => {
     const token = getToken(req);
-    if (!token) return res.status(403).json({ status: "FAILURE", message: "Auth token not passed" })
+    if (!token) return res.status(403).json({ status: "Access denied", message: "Auth token not passed" })
     jwt.verify(token, process.env.SECREATE, (err, user) => {
         if (err) {
-            return res.status(403).json({ status: "FAILURE", message: "Your are not authorized" });
+            return res.status(403).json({ status: "Access denied", message: "Your are not authorized" });
         }
         next();
 
