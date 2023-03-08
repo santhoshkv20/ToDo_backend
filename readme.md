@@ -1,8 +1,10 @@
 # API Details
 
+**Hosted URL** = https://todolist-8n9u.onrender.com
+
 1. Signup
 
-- POST http://localhost:4000/user/signup
+- POST https://todolist-8n9u.onrender.com/user/signup
 
 ```
 Request body
@@ -25,7 +27,7 @@ Respose body
 OTP will be sent to email address(valid for 1 hour)
 ```
 2. Verify OTP
-- POST http://localhost:4000/user/verifyOtp
+- POST https://todolist-8n9u.onrender.com/user/verifyOtp
 ```
 
 Request body
@@ -43,7 +45,7 @@ Response body
 }
 ```
 3. Signin
-- POST http://localhost:4000/user/signin
+- POST https://todolist-8n9u.onrender.com/user/signin
 ```
 Request body
     {   
@@ -66,7 +68,7 @@ Session also tracked here which expire in 5 minutes
 ```
 
 4. Adding new Todo task
-- POST http://localhost:4000/task/newtodo
+- POST https://todolist-8n9u.onrender.com/task/newtodo
 ```
 Request body
 
@@ -90,7 +92,7 @@ Response body
 }
 ```
 5. List all task
-- GET http://localhost:4000/task/getAllTodo/?startLimit=0&endLimit=3
+- GET https://todolist-8n9u.onrender.com/task/getAllTodo/?startLimit=0&endLimit=3
 
 ```
 Response body
@@ -118,7 +120,7 @@ Response body
 }
 ```
 6. Update task
-- POST  http://localhost:4000/task/updateTask/63f8ba41fc47bfc83cf801dc
+- POST  https://todolist-8n9u.onrender.com/task/updateTask/63f8ba41fc47bfc83cf801dc
 ```
 Request body
 {
@@ -135,7 +137,7 @@ Respose body
 }
 ```
 7. Delete task
-- http://localhost:4000/task/deletTodo/63f77181380f7bc041941c6b
+- https://todolist-8n9u.onrender.com/task/deletTodo/63f77181380f7bc041941c6b
 
 ```
 Response body(updated all task will be sent)
@@ -157,7 +159,7 @@ Response body(updated all task will be sent)
 }
 ```
 8. Sort tasks
-- http://localhost:4000/task/sortTask
+- https://todolist-8n9u.onrender.com/task/sortTask
 ```
 Request body(array of task ids must be sent in body)
 
@@ -187,7 +189,7 @@ Response body
 ```
 
 9. Logout user
-- POST http://localhost:4000/user/logout
+- POST https://todolist-8n9u.onrender.com/user/logout
 ```
 Response body
 
@@ -199,7 +201,7 @@ Response body
 
 ```
 10. Regenarate OTP
-- POST http://localhost:4000/user/regenareteOtp
+- POST https://todolist-8n9u.onrender.com/user/regenareteOtp
 ```
 Request body
 
