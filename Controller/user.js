@@ -64,7 +64,7 @@ exports.postSignup = async (req, res, next) => {
             email: email,
             password: hashedPassword,
             otp: otp,
-            otpExpireTime: new Date() + 3600000, isVerified: false
+            otpExpireTime:  Date.now() + 3600000, isVerified: false
         })
 
         let userDoc = await user.save()
