@@ -155,7 +155,7 @@ exports.regenareteOtp = (req, res, next) => {
         if (!user) return res.json({ status: "Failure", message: "user with " + email + " email not found" })
         if (user.isVerified) return res.json({ status: "failure", message: "Your account is already verified" })
         user.otp = otp;
-        user.otpExpireTime = new Date() + 3600000;
+        user.otpExpireTime =  Date.now() + 3600000;
         user.save()
             .then(userDoc => {
                 sendMail(email, "Verify your account", otp).then(data => {
